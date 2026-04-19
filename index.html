@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>London Spotters — Airport Plane Spotting Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sky: #0a1628;
+    --sky-mid: #0e2040;
+    --runway: #1a1a1a;
+    --accent: #e8b84b;
+    --accent-dim: #c49a32;
+    --white: #f5f3ee;
+    --muted: #8a9ab5;
+    --card-bg: #111c2e;
+    --card-border: rgba(232, 184, 75, 0.18);
+    --tag-blue: #1e3a5f;
+    --tag-blue-text: #7ab3e8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--sky);
+    color: var(--white);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(232, 184, 75, 0.2);
+    background: linear-gradient(180deg, #060e1c 0%, #0a1628 100%);
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 40% at 50% 120%, rgba(232, 184, 75, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .runway-lights {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-bottom: 2.5rem;
+  }
+
+  .runway-lights span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.5;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  .runway-lights span:nth-child(2) { animation-delay: 0.3s; }
+  .runway-lights span:nth-child(3) { animation-delay: 0.6s; }
+  .runway-lights span:nth-child(4) { animation-delay: 0.9s; }
+  .runway-lights span:nth-child(5) { animation-delay: 1.2s; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.9; }
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 7rem);
+    letter-spacing: 0.04em;
+    color: var(--white);
+    line-height: 0.9;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .tagline {
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--sky-mid);
+    border-bottom: 1px solid rgba(232, 184, 75, 0.12);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  nav ul {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    list-style: none;
+    padding: 0 1rem;
+  }
+
+  nav a {
+    display: block;
+    padding: 0.9rem 1.2rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+  }
+
+  nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── SECTIONS ── */
+  .airport-section {
+    padding: 4rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .airport-section + .airport-section {
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .airport-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .airport-code {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .airport-info h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    line-height: 1.1;
+  }
+
+  .airport-info p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 600px;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .tag {
+    background: var(--tag-blue);
+    color: var(--tag-blue-text);
+    font-size: 0.72rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── SPOT CARDS ── */
+  .spots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .spot-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.4rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .spot-card:hover {
+    border-color: rgba(232, 184, 75, 0.45);
+    transform: translateY(-2px);
+  }
+
+  .spot-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .spot-card:hover::before { opacity: 1; }
+
+  .spot-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: rgba(232, 184, 75, 0.12);
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .spot-name {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+    padding-right: 2rem;
+  }
+
+  .spot-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+
+  .badge-view { background: rgba(30,90,140,0.4); color: #7ab3e8; }
+  .badge-access { background: rgba(30,100,60,0.4); color: #70c98a; }
+  .badge-photo { background: rgba(130,60,130,0.4); color: #d490d4; }
+  .badge-cost { background: rgba(100,60,20,0.4); color: #e8a86a; }
+  .badge-warn { background: rgba(140,40,40,0.35); color: #e88a8a; }
+
+  .spot-desc {
+    color: #8a9ab5;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .spot-tip {
+    margin-top: 0.8rem;
+    padding: 0.65rem 0.85rem;
+    background: rgba(232, 184, 75, 0.06);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.8rem;
+    color: #b8a06a;
+    line-height: 1.5;
+  }
+
+  .spot-tip strong { color: var(--accent); font-weight: 500; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 auto 2.5rem;
+    max-width: 200px;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(232, 184, 75, 0.25);
+  }
+
+  .divider-icon { color: var(--accent); font-size: 1rem; }
+
+  @media (max-width: 600px) {
+    .airport-code { font-size: 2.8rem; }
+    .spots-grid { grid-template-columns: 1fr; }
+    nav a { padding: 0.7rem 0.7rem; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="runway-lights">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <h1>LONDON<br><span>SPOTTERS</span></h1>
+  <p class="tagline">The complete plane spotting guide to all London airports</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="#lhr">LHR Heathrow</a></li>
+    <li><a href="#lgw">LGW Gatwick</a></li>
+    <li><a href="#lcy">LCY City</a></li>
+    <li><a href="#stn">STN Stansted</a></li>
+    <li><a href="#ltn">LTN Luton</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════════ LHR ══ -->
+<section class="airport-section" id="lhr">
+  <div class="airport-header">
+    <div class="airport-code">LHR</div>
+    <div class="airport-info">
+      <h2>London Heathrow</h2>
+      <p>Europe's busiest airport with two parallel runways that switch direction at 3pm daily. Expect BA and Virgin heavies, A380s galore, and traffic from every corner of the globe. Getting around is easy — the Tube serves the airport directly.</p>
+      <div class="tags">
+        <span class="tag">Two runways</span>
+        <span class="tag">A380 hub</span>
+        <span class="tag">Tube access</span>
+        <span class="tag">Runway switch 3pm</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="spots-grid">
+
+    <div class="spot-card">
+      <span class="spot-number">01</span>
+      <div class="spot-name">Myrtle Avenue</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">27L arrivals</span>
+        <span class="badge badge-access">Public land</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">The most iconic spotting location in the UK. A short residential road ending in grassland just off the Hatton Cross tube station, sitting directly under the threshold of runway 27L. Aircraft pass as low as 40 feet overhead — genuinely jaw-dropping.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Best light is afternoon. Bring a wide-angle lens for dramatic undercarriage shots. Gets crowded at weekends.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">02</span>
+      <div class="spot-name">Terminal 5 Car Park (Level 5)</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">27R departures</span>
+        <span class="badge badge-access">T5 car park</span>
+        <span class="badge badge-cost">Paid parking</span>
+      </div>
+      <div class="spot-desc">From the top level of the T5 short-stay car park you get excellent elevated views of aircraft taxiing and lining up for departure on Runway 27R. A great option when 27L spotting at Myrtle is less productive.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Stay the minimum time to keep costs down. Elevated position means better telephoto angles.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">03</span>
+      <div class="spot-name">Eastern Perimeter Road</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">27R arrivals</span>
+        <span class="badge badge-access">Public road</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">When aircraft arrive on 27R and Myrtle Avenue is out of play, walking along the Eastern Perimeter Road (starting from Hatton Cross station) offers alternative positions along the fence. Follow other spotters — they know where to stop.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Security regularly patrols and may ask you to step back a metre from the fence — they won't remove you from public land.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">04</span>
+      <div class="spot-name">Harmondsworth Moor</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">09L/09R departures</span>
+        <span class="badge badge-access">Country park</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">A peaceful country park to the west of the airport offering a unique perspective on aircraft heading east. Good for long-lens photography and video when the runways are in easterly mode. A pleasant walk is involved.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Best from late morning to afternoon. Wear comfortable shoes — there's a good walk to reach the prime viewing area.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">05</span>
+      <div class="spot-name">Marriott Hotel Rooftop</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Northern runway</span>
+        <span class="badge badge-access">Hotel guests</span>
+        <span class="badge badge-cost">Spotter packages</span>
+      </div>
+      <div class="spot-desc">The Heathrow Marriott sits north of the airport and offers a superb elevated rooftop vantage point over the northern runway (27L/09R). The hotel offers dedicated spotters' packages through its website — pricey but unique.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Book via the hotel website and specifically request the spotter package for rooftop access and runway-facing room.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">06</span>
+      <div class="spot-name">Northern Perimeter Road</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Both runways</span>
+        <span class="badge badge-access">Public road</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">Walking sections of the Northern Perimeter Road gives you different angles across both runways depending on the active configuration. A good backup when specific spots aren't working due to the day's runway direction.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Use Flightradar24 to know in advance which runway is active before deciding where to walk.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ LGW ══ -->
+<section class="airport-section" id="lgw">
+  <div class="airport-header">
+    <div class="airport-code">LGW</div>
+    <div class="airport-info">
+      <h2>London Gatwick</h2>
+      <p>The world's busiest single-runway airport, 30 miles south of London. Strong on low-cost carriers — easyJet dominates — alongside BA, TUI, and unusual visitors like Norse Atlantic and Westjet. The single runway keeps the action focused in one place.</p>
+      <div class="tags">
+        <span class="tag">Single runway</span>
+        <span class="tag">easyJet hub</span>
+        <span class="tag">LCC variety</span>
+        <span class="tag">Two terminals</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="spots-grid">
+
+    <div class="spot-card">
+      <span class="spot-number">01</span>
+      <div class="spot-name">Lowfield Heath Recreation Ground</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">26L touchdowns</span>
+        <span class="badge badge-access">Public park</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">The best spot for touchdown shots on runway 26L. Loads of space to spread out and you'll often find familiar faces from the community here. One of the most reliable and comfortable spots at Gatwick with open views.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Check the active runway direction before travelling — this spot works best when 26L is in use for arrivals.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">02</span>
+      <div class="spot-name">Blue Car Park 1 (Level 5)</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">26L short finals</span>
+        <span class="badge badge-access">South Terminal</span>
+        <span class="badge badge-cost">£13+ for 2hrs</span>
+        <span class="badge badge-warn">Signs discourage lingering</span>
+      </div>
+      <div class="spot-desc">The top level of Blue Multi-Storey Car Park 1 gives good elevated views of arrivals on short final approach to 26L. Note that signage indicates spotters aren't encouraged to loiter — keep it brief and move on.</div>
+      <div class="spot-tip"><strong>Tip:</strong> You face into the sun from this position — best in overcast conditions or early morning.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">03</span>
+      <div class="spot-name">South Terminal Crash Gate Area</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Runway 08 departures</span>
+        <span class="badge badge-access">South-east perimeter</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">The most popular spotting point at Gatwick for taxiing and departure shots when runway 08 is active (roughly 30% of the time). Multiple angles available along the fence — a ladder helps for cleaner shots over the top.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Do NOT park near the crash gate or under the flightpath — security will move your car. Park further along by the Flight pub and walk back (~20 mins).</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">04</span>
+      <div class="spot-name">Gatwick Railway Station Platforms</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">South Terminal apron</span>
+        <span class="badge badge-access">Platform ticket</span>
+        <span class="badge badge-cost">Low cost</span>
+      </div>
+      <div class="spot-desc">The airport's own railway station linked to the South Terminal offers surprisingly decent views of the apron and some aircraft movements — a handy option if you're arriving by Gatwick Express and want a quick look without going further afield.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Useful for logging registrations rather than photography. Combine with a brief terminal visit.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">05</span>
+      <div class="spot-name">Gatwick Aviation Museum</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Western runway end</span>
+        <span class="badge badge-access">Fri–Sun only</span>
+        <span class="badge badge-cost">Entry fee</span>
+      </div>
+      <div class="spot-desc">Located on the perimeter road with two fields and an observation deck looking into the western end of the runway. Views are through security fencing but largely unobstructed — mostly departures climbing out. Open Friday to Sunday only.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Worth combining with a look at the museum's collection of preserved aircraft. Check opening hours before visiting.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">06</span>
+      <div class="spot-name">BLOC Hotel (South Terminal)</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Full airport panorama</span>
+        <span class="badge badge-access">Hotel guests</span>
+        <span class="badge badge-cost">Room rates</span>
+      </div>
+      <div class="spot-desc">Situated atop the South Terminal, rooms facing airside give sweeping views of both terminals and sections of the runway — a unique overnight option for the committed spotter. Depending on room allocation you may see most aircraft movements.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Request an airside-facing room when booking. Upper floors give the best unobstructed views.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ LCY ══ -->
+<section class="airport-section" id="lcy">
+  <div class="airport-header">
+    <div class="airport-code">LCY</div>
+    <div class="airport-info">
+      <h2>London City Airport</h2>
+      <p>A unique airport carved into the Royal Docks, hemmed in by Canary Wharf's towers. Its short runway and steep 5.5° approach angle mean only specially certified aircraft can operate here — mostly regional jets. Spectacular urban backdrop for photography.</p>
+      <div class="tags">
+        <span class="tag">Steep approach 5.5°</span>
+        <span class="tag">Docklands setting</span>
+        <span class="tag">DLR access</span>
+        <span class="tag">Regional jets</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="spots-grid">
+
+    <div class="spot-card">
+      <span class="spot-number">01</span>
+      <div class="spot-name">Royal Albert Dock Footpath</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Full runway & approaches</span>
+        <span class="badge badge-access">Public path</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">The prime spot at London City. Walk the footpath along the Royal Albert Dock and watch Embraer jets bank dramatically over Canary Wharf's towers on their steep final approach. The combination of glass skyscrapers and low aircraft is unlike anywhere else in the world.</div>
+      <div class="spot-tip"><strong>Tip:</strong> DLR to Royal Albert station puts you right there. Golden hour light over the dock is spectacular in summer.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">02</span>
+      <div class="spot-name">Fox @ Connaught Pub</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Riverside approach views</span>
+        <span class="badge badge-access">Public — buy a drink</span>
+        <span class="badge badge-cost">Menu prices</span>
+      </div>
+      <div class="spot-desc">A riverside terrace pub just across the water from the airport that's become a genuine spotting institution. You get views of the approach spectacle without the full roar of jet engines. Popular with after-work City workers and aviation vloggers alike.</div>
+      <div class="spot-tip"><strong>Tip:</strong> The terrace is best in summer. Arrive early on busy evenings to grab a table with a direct sightline to the runway.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">03</span>
+      <div class="spot-name">Yi-Ban Restaurant</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Across the water</span>
+        <span class="badge badge-access">Restaurant — reservation advised</span>
+        <span class="badge badge-cost">£26–40 per head</span>
+      </div>
+      <div class="spot-desc">For a thoroughly civilised spotting session, this restaurant sits directly opposite the airport across the dock. Views from outside tables are excellent, particularly in summer evenings. Good for a longer stay with food and planes.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Views from outside tables only — inside you're blocked by glass. Best in summer. Ample parking on site.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ STN ══ -->
+<section class="airport-section" id="stn">
+  <div class="airport-header">
+    <div class="airport-code">STN</div>
+    <div class="airport-info">
+      <h2>London Stansted</h2>
+      <p>Thirty miles north-east of London, Stansted is the low-cost carrier capital — Ryanair's biggest UK base. Cargo traffic is a highlight, with Cargolux, FedEx, UPS, and various Asian carriers making regular appearances. Single runway, sprawling aprons.</p>
+      <div class="tags">
+        <span class="tag">Ryanair hub</span>
+        <span class="tag">Cargo variety</span>
+        <span class="tag">Single runway</span>
+        <span class="tag">Executive jets</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="spots-grid">
+
+    <div class="spot-card">
+      <span class="spot-number">01</span>
+      <div class="spot-name">Burton End Village</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Opposite side of runway</span>
+        <span class="badge badge-access">Public road & fields</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">The go-to spot for Stansted — a tiny village on the opposite side of the runway to the terminal. Head off the M11, past Molehill Green and Elsenham, follow signs past the fields to reach approach shot positions at the end of the road.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Park at the road end and walk into the field for clean approach shots. You won't be bothered here. Good spot for a relaxed, unpressured session.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">02</span>
+      <div class="spot-name">Belmer Road</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Runway & NW aprons</span>
+        <span class="badge badge-access">Public road</span>
+        <span class="badge badge-cost">Free</span>
+        <span class="badge badge-warn">Police may occasionally ask questions</span>
+      </div>
+      <div class="spot-desc">Probably the best runway views at Stansted — Belmer Road runs to the north-west where aircraft arrive, depart and taxi in front of you. The spot is just off the road behind a row of trees. Airport security has no authority here as it's public land.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Police have been known to ask questions but have no grounds to remove you from public land. Stay calm and confident.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">03</span>
+      <div class="spot-name">Great Hallingbury Footpath</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">04 approach shots</span>
+        <span class="badge badge-access">Public footpath</span>
+        <span class="badge badge-cost">Free</span>
+        <span class="badge badge-warn">Spotters discouraged</span>
+      </div>
+      <div class="spot-desc">Park near the church at Great Hallingbury, walk through the garden and follow the public footpath into an open field. Good for approach shots on runway 04. The airport actively discourages spotters from this location, though the footpath itself is public.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Discretion is advised here. Keep a low profile and be respectful of the local area.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">04</span>
+      <div class="spot-name">Birchanger Services (M11)</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Runway 05 end</span>
+        <span class="badge badge-access">Private land — be discreet</span>
+        <span class="badge badge-cost">Free (with purchase)</span>
+        <span class="badge badge-warn">Private land</span>
+      </div>
+      <div class="spot-desc">The Birchanger motorway services close to the end of runway 05 give views of aircraft close to rotation. This is private land so keep things discreet, buy a coffee, and be prepared to move on if security asks.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Good for a quick pop-in between other spots rather than a long session. Check Flightradar24 to know which end is active.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ LTN ══ -->
+<section class="airport-section" id="ltn">
+  <div class="airport-header">
+    <div class="airport-code">LTN</div>
+    <div class="airport-info">
+      <h2>London Luton</h2>
+      <p>Thirty miles north of London off the M1. Luton is the place for business jets — dozens of Gulfstreams, Falcons, and Global Expresses pass through daily alongside easyJet, Ryanair, Wizz Air, and TUI. Authorities are generally relaxed about photography on public land.</p>
+      <div class="tags">
+        <span class="tag">Bizjet paradise</span>
+        <span class="tag">easyJet & Wizz</span>
+        <span class="tag">Photography friendly</span>
+        <span class="tag">Single runway</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="spots-grid">
+
+    <div class="spot-card">
+      <span class="spot-number">01</span>
+      <div class="spot-name">Taxiway Fire Station Area</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">All taxiway traffic</span>
+        <span class="badge badge-access">Near Mid Stay car park</span>
+        <span class="badge badge-cost">15 mins free</span>
+      </div>
+      <div class="spot-desc">All traffic on the taxiway passes this point in both directions, giving you different angles depending on movement direction. Located near the Mid Stay car park. First 15 minutes of parking is free — ideal for a quick reconnaissance.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Up to 30 minutes costs £4. Good for logging registrations quickly before moving to other spots.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">02</span>
+      <div class="spot-name">Car Park Overview (Signature FBO)</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Runway, South Apron, Taxiways</span>
+        <span class="badge badge-access">Airport car park</span>
+        <span class="badge badge-cost">Paid</span>
+      </div>
+      <div class="spot-desc">Good panoramic views across the runway, South Apron, Taxiways Delta and Foxtrot, the Signature FBO, Gulfstream hangar, and main apron — all from the elevated car park. A great all-rounder for logging business jets and commercial traffic simultaneously.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Luton is the top London airport for bizjets — you may well see a Global 7500 or a Bombardier Challenger here that won't appear at the other airports.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">03</span>
+      <div class="spot-name">Dane Street</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Eastern runway section</span>
+        <span class="badge badge-access">Public road</span>
+        <span class="badge badge-cost">Free parking</span>
+      </div>
+      <div class="spot-desc">A side street off Chiltern Green Road that overlooks the eastern section of the runway. Free parking and a quiet, low-pressure environment — ideal if you want to avoid paying for airport car parks while still getting decent runway views.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Best for easterly operations. Combine with the car park area for a full circuit of the airport's spotting spots.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">04</span>
+      <div class="spot-name">Someries Castle & Surroundings</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Runway approaches</span>
+        <span class="badge badge-access">Public footpath / heritage site</span>
+        <span class="badge badge-cost">Free</span>
+      </div>
+      <div class="spot-desc">The area around the historic Someries Castle ruins to the south-east of the airport provides elevated ground with open views of runway approaches. A more scenic backdrop than most spotting locations — medieval ruins under a busy flightpath.</div>
+      <div class="spot-tip"><strong>Tip:</strong> A pleasant walk from surrounding roads. Good for a relaxed half-day out combining aviation with a slice of Bedfordshire history.</div>
+    </div>
+
+    <div class="spot-card">
+      <span class="spot-number">05</span>
+      <div class="spot-name">Hotel Runway View</div>
+      <div class="spot-meta">
+        <span class="badge badge-view">Runway panorama</span>
+        <span class="badge badge-access">Hotel guests</span>
+        <span class="badge badge-cost">Room rates</span>
+      </div>
+      <div class="spot-desc">The hotel adjacent to the airport offers rooms overlooking the runway — email ahead and request a runway-facing room and the hotel will do its best to accommodate. The view from the room (and the road outside) gives solid photography opportunities without needing to move far.</div>
+      <div class="spot-tip"><strong>Tip:</strong> Email rather than call — put "runway view room request" clearly in your message so it gets to the right person.</div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="divider"><span class="divider-icon">✈</span></div>
+  <p>London Spotters &mdash; A guide to plane spotting at all five London airports.</p>
+  <p style="margin-top: 0.5rem;">Always respect private property, follow local signage, and be courteous to airport staff and residents. Use <a href="https://www.flightradar24.com" target="_blank">Flightradar24</a> to track live movements before you head out.</p>
+  <p style="margin-top: 1rem; color: #4a5a72; font-size: 0.75rem;">Information compiled from spotter community reports. Conditions and access may change — verify locally before visiting.</p>
+</footer>
+
+</body>
+</html>
